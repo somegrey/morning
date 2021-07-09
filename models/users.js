@@ -5,7 +5,8 @@ var userSchema = mongoose.Schema({
     username: String,
     password: String,
     token: String,
-    articleIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'articles' }]
+    articleIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'articles' }],
+    lang: String
 });
 
 var UserModel = mongoose.model('users', userSchema);

@@ -10,7 +10,6 @@ router.post('/sign-up', async function(req, res, next) {
   var error = [];
   var result = false;
   var match = await UserModel.findOne({ email: req.body.email });
-  y
   if (match !== null){
     error.push('Email déjà associé à un compte');
   } else if (req.body.username == '' || req.body.email == '' || req.body.password == ''){
@@ -21,6 +20,7 @@ router.post('/sign-up', async function(req, res, next) {
       username: req.body.username,
       email: req.body.email,
       password: hash,
+      lang: "fr",
       token: uid2(32)
     });
     var userSaved = await newUser.save();
@@ -87,4 +87,15 @@ router.get('/getwishlist', async function(req, res, next) {
 
     res.json({articles: user.articleIds});
   });
+/* PUT choix de langue. */
+router.put('/chose-lang/:id', async function(req, res, next) {
+  var user = await UserModel.findById(req.params.id);
+  await UserModel.updateOne(
+    {_id: req.params.id},
+    {lang: req.body.lang}
+  )
+  console.log(user)
+  res.json(user)
+});
+
 module.exports = router;
