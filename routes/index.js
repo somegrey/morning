@@ -81,20 +81,14 @@ router.get('/getwishlist', async function(req, res, next) {
 
 /* DELETE dans la wishList */
 router.delete('/deletewishlist', async function(req, res, next) {
-
-  // var user = await UserModel.findOne({token: req.body.token })
-  // var wishlist = user.articleIds
-  // wishlist.deleteOne({id: req.body.id})
-  // console.log(id)
-
   var user = await UserModel.findOne({token: req.body.token })
-  user.findOne({}, function(err, user){
-    user.articlesIds.req.body.id = undefined
-    user.save()
-  })
-  console.log(user)
-
-  res.json({deleted});
+  console.log("route delete", user);
+  console.log(req.body.id);
+  var wishlist = user.articleIds;
+  var match = wishlist.indexOf(req.body.id);
+  wishlist.splice(match,1);
+  user.save();
+  res.json(user);
 });
 
 /* PUT choix de langue. */

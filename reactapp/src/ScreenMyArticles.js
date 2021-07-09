@@ -51,15 +51,14 @@ function ScreenMyArticles(props) {
       headers: {'Content-Type':'application/x-www-form-urlencoded'},
       body: "token=" + token + "&id=" + id 
     });
-    var response  = await rawResponse.json();
-    setFrontDisplay(response.articles)
   }
 
   useEffect(() =>{
     async function loadMyArticles(){
+
       var rawResponse = await fetch(`/getwishlist?token=${props.token}`);
       var response  = await rawResponse.json();
-      console.log(response)
+
       if (lang === null){
         setFrontDisplay(response.articles)
       } else if (lang !== null){
