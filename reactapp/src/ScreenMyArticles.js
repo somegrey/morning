@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState,useEffect} from 'react';
 import './App.css';
 import { Modal, Card, Icon, Col, Row } from 'antd';
 import Nav from './Nav'
@@ -14,6 +14,7 @@ function ScreenMyArticles(props) {
   const [content, setContent] = useState('');
   const [description, setDescription] = useState('');
   const [link, setLink] = useState('');
+  const [frontDisplay, setFrontDisplay]= useState([]);
 
   const showModal = (title, content, description, link) => {
     setVisible(true);
@@ -30,22 +31,36 @@ function ScreenMyArticles(props) {
   const handleCancel = () => {
     setVisible(false);
   };
+  var ifEmpty= "";
 
-  var frontWishlist = [];
-  for (let i=0; i<props.wishlistToDisplay.length; i++){
+ 
+
+  useEffect(() =>{
+    async function loadMyArticles(){
+      var rawResponse = await fetch(`/getwishlist?token=${props.token}`);
+      var response  = await rawResponse.json();
+      console.log(response)
+      setFrontDisplay(response.articles)
+     }
+     loadMyArticles()
+    },[])
+    console.log(frontDisplay.length)
+
+var frontWishlist=[]
+  for (let i=0; i < frontDisplay.length; i++){
     frontWishlist.push(
       <Col span={6} style={{display:'flex',justifyContent:'center'}}>
         <Card
           style={{width: 300, margin:'15px', display:'flex', flexDirection: 'column', justifyContent:'space-between' }}
-          cover={<img alt="example" src={props.wishlistToDisplay[i].urlToImage}/>}
+          cover={<img alt="example" src={frontDisplay[i].image}/>}
           actions={[
-            <Icon onClick={() => showModal(props.wishlistToDisplay[i].title, props.wishlistToDisplay[i].content, props.wishlistToDisplay[i].description, props.wishlistToDisplay[i].url)} type="read" key="ellipsis2" />,
+            <Icon onClick={() => showModal(frontDisplay[i].title, frontDisplay[i].content, frontDisplay[i].description, frontDisplay[i].url)} type="read" key="ellipsis2" />,
             <Icon onClick={() => props.deleteArticle(props.i)} type="delete" key="ellipsis" />
           ]}
           >  
           <Meta
-            title={props.wishlistToDisplay[i].title}
-            description={props.wishlistToDisplay[i].description}
+            title={frontDisplay[i].title}
+            description={frontDisplay[i].description}
           />
           <Modal
             title={title}
@@ -62,7 +77,6 @@ function ScreenMyArticles(props) {
       </Col>
     );
   }
-  var ifEmpty= "";
   if (frontWishlist.length === 0){
     ifEmpty= "Vous n'avez pas encore séléctionné d'articles à lire";
   }

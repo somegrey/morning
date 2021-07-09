@@ -3,6 +3,7 @@ var router = express.Router();
 var UserModel = require('../models/users.js');
 var bcrypt = require('bcrypt');
 var uid2 = require('uid2');
+var articleModel= require('../models/articles')
 
 /* POST sign up. */
 router.post('/sign-up', async function(req, res, next) { 
@@ -44,4 +45,46 @@ router.post('/sign-in', async function(req, res, next) {
   res.json({result, user, error2});
 });
 
+/*Ajout articles wishlist*/
+
+router.post('/addtowishlist', async function(req, res, next) {
+var article = await articleModel.findOne({title: req.body.titleFromFront})
+var articles = await articleModel.find()
+var userArticles = await UserModel.findById(req.body.idFromFront).populate('articleIds').exec();
+var user= await UserModel.findById(req.body.idFromFront);
+
+
+
+if(article){
+  user.articleIds.push(article)
+  var userSaved = await user.save();
+
+} 
+else {
+  var newArticle = new articleModel({
+    title: req.body.titleFromFront,
+    description: req.body.descriptionFromFront,
+    content: req.body.contentFromFront,
+    image: req.body.imageFromFront,
+    url: req.body.urlFromFront
+  });
+
+  var newArticleSaved = await newArticle.save();
+  user.articleIds.push(newArticleSaved)
+  var userSaved = await user.save();
+}
+
+console.log(user,'lkjkj')
+console.log(userArticles,'articles en detail')
+
+  res.json({articles,articlesUser: user.articleIds});
+});
+
+router.get('/getwishlist', async function(req, res, next) {
+  var user = await UserModel.findOne({token: req.query.token}).populate('articleIds').exec();
+  console.log(user,'articles en detail')  
+  console.log(user.articleIds,'articles en detail')
+
+    res.json({articles: user.articleIds});
+  });
 module.exports = router;
