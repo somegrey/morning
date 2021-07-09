@@ -43,6 +43,16 @@ function ScreenMyArticles(props) {
   } else if(lang === "fr"){
     borderfr={border:"2px white solid"}
     borderuk={border:"none"}
+  } 
+
+  const deleteArticle = async (token,id) => {
+    var rawResponse =  await fetch(`/deletewishlist/`,{
+      method:'DELETE',
+      headers: {'Content-Type':'application/x-www-form-urlencoded'},
+      body: "token=" + token + "&id=" + id 
+    });
+    var response  = await rawResponse.json();
+    setFrontDisplay(response.articles)
   }
 
   useEffect(() =>{
@@ -76,7 +86,7 @@ function ScreenMyArticles(props) {
           cover={<img alt="example" src={frontDisplay[i].image}/>}
           actions={[
             <Icon onClick={() => showModal(frontDisplay[i].title, frontDisplay[i].content, frontDisplay[i].description, frontDisplay[i].url)} type="read" key="ellipsis2" />,
-            <Icon onClick={() => props.deleteArticle(props.i)} type="delete" key="ellipsis" />
+            <Icon onClick={() => deleteArticle(props.token, frontDisplay[i]._id)} type="delete" key="ellipsis" />
           ]}
           >  
           <Meta
