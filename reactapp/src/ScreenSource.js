@@ -7,27 +7,32 @@ import {connect} from 'react-redux';
 
 function ScreenSource(props) {
   const [sourceList, setSourceList] = useState([]);
+  const [selectedLang, setSelectedLang] = useState(props.lang);
 
   var borderfr={border:"2px white solid"}
   var borderuk={border:"none"}
-  if(props.lang==="gb"){
+  if(selectedLang==="gb"){
     borderuk={border:"2px white solid"}
     borderfr={border:"none"}
   }
 
+  var changeLang = async (lang) => {
+    setSelectedLang(lang)
+    await fetch("/chose-lang/"+props.id, {
+      method: 'PUT',
+      headers: {'Content-Type':'application/x-www-form-urlencoded'},
+      body: 'lang=' + lang 
+    });
+  }
+
   useEffect(() => {
     async function loadSources(){
-      var lang = 'fr'
-      if (props.lang === "gb"){
-        lang = "gb"
-      }
-      props.changeLang(props.lang)
-      var rawResponse = await fetch(`https://newsapi.org/v2/top-headlines/sources?country=${lang}&apiKey=ba77f76104294ea0a1367ba538b4ae2d`);
+      var rawResponse = await fetch(`https://newsapi.org/v2/top-headlines/sources?country=${selectedLang}&apiKey=ba77f76104294ea0a1367ba538b4ae2d`);
       var response = await rawResponse.json();
       setSourceList(response.sources);
     }
     loadSources()
-  }, [props.lang])
+  }, [selectedLang])
   
   if (props.token === undefined){
     return(
@@ -39,8 +44,8 @@ function ScreenSource(props) {
       <div>
           <Nav/>
           <div className="Banner">
-            <img style={borderfr} onClick={() => props.changeLang('fr')} src={`/images/fr.svg`} />
-            <img style={borderuk} onClick={() => props.changeLang('gb')} src={`/images/uk.svg`} />
+            <img style={borderfr} onClick={() => changeLang("fr")} src={`/images/fr.svg`} />
+            <img style={borderuk} onClick={() => changeLang("gb")} src={`/images/uk.svg`} />
           </div>
           <div className="HomeThemes">
                 Hello {props.username} 
@@ -64,19 +69,19 @@ function ScreenSource(props) {
 }
 
 function mapStateToProps(state){
-  return { token: state.user.token, username: state.user.username, lang: state.lang }
+  return { token: state.user.token, username: state.user.username, id: state.user._id, lang: state.user.lang }
 }
 
-function mapDispatchToProps(dispatch){
-  return{
-    changeLang: function(lang){
-      dispatch({type: 'changelang', lang});
-    }
-  }
-}
+// function mapDispatchToProps(dispatch){
+//   return{
+//     changeLang: function(lang){
+//       dispatch({type: 'changelang', lang});
+//     }
+//   }
+// }
 
 export default connect (
   mapStateToProps,
-  mapDispatchToProps
+  null
 )(ScreenSource);
 
