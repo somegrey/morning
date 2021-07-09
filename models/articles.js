@@ -5,7 +5,8 @@ var articleSchema = mongoose.Schema({
    description: String,
    content: String,
    image: String, 
-   url: String, 
+   url: String,
+   lang: String 
 });
 
 var articleModel = mongoose.model('articles', articleSchema);

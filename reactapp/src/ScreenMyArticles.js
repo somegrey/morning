@@ -14,7 +14,8 @@ function ScreenMyArticles(props) {
   const [content, setContent] = useState('');
   const [description, setDescription] = useState('');
   const [link, setLink] = useState('');
-  const [frontDisplay, setFrontDisplay]= useState([]);
+  const [frontDisplay, setFrontDisplay] = useState([]);
+  const [lang, setLang] = useState(null);
 
   const showModal = (title, content, description, link) => {
     setVisible(true);
@@ -31,22 +32,42 @@ function ScreenMyArticles(props) {
   const handleCancel = () => {
     setVisible(false);
   };
-  var ifEmpty= "";
 
- 
+  var ifEmpty= "";
+  
+  var borderfr={border:"none"}
+  var borderuk={border:"none"}
+  if(lang === "uk"){
+    borderuk={border:"2px white solid"}
+    borderfr={border:"none"}
+  } else if(lang === "fr"){
+    borderfr={border:"2px white solid"}
+    borderuk={border:"none"}
+  }
 
   useEffect(() =>{
     async function loadMyArticles(){
       var rawResponse = await fetch(`/getwishlist?token=${props.token}`);
       var response  = await rawResponse.json();
       console.log(response)
-      setFrontDisplay(response.articles)
-     }
-     loadMyArticles()
-    },[])
-    console.log(frontDisplay.length)
+      if (lang === null){
+        setFrontDisplay(response.articles)
+      } else if (lang !== null){
+        var filteredList = []
+        for (var i=0; i<response.articles.length; i++){
+          if(response.articles[i].lang === lang){
+            filteredList.push(response.articles[i])
+          }
+        }
+        setFrontDisplay(filteredList)
+      }
+    }  
+    loadMyArticles()
+  },[lang])
 
-var frontWishlist=[]
+  console.log(frontDisplay)
+
+  var frontWishlist=[]
   for (let i=0; i < frontDisplay.length; i++){
     frontWishlist.push(
       <Col span={6} style={{display:'flex',justifyContent:'center'}}>
@@ -77,8 +98,11 @@ var frontWishlist=[]
       </Col>
     );
   }
-  if (frontWishlist.length === 0){
+
+  if (frontWishlist.length === 0 && lang === null){
     ifEmpty= "Vous n'avez pas encore séléctionné d'articles à lire";
+  } else if (frontWishlist.length === 0 && lang !== null){
+    ifEmpty= "Vous n'avez pas encore séléctionné d'articles à lire  dans cette langue";
   }
 
   if (props.token === undefined){
@@ -90,7 +114,10 @@ var frontWishlist=[]
     return (
       <div>
         <Nav/>
-        <div className="Banner"/>
+        <div className="Banner">
+          <img style={borderfr} onClick={() => setLang("fr")} src={`/images/fr.svg`} />
+          <img style={borderuk} onClick={() => setLang("gb")} src={`/images/uk.svg`} />
+        </div>
         <Row className="Card" style={{display:'flex',justifyContent:'center'}}>
         {frontWishlist}
         {ifEmpty}

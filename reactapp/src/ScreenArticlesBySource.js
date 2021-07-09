@@ -26,11 +26,10 @@ function ScreenArticlesBySource(props) {
     var requete = await fetch('/addtowishlist',{
       method: 'POST',
       headers: {'Content-Type':'application/x-www-form-urlencoded'},
-      body: "titleFromFront=" + encodeURIComponent(article.title) + "&descriptionFromFront=" + article.description + "&contentFromFront=" + article.content + "&urlFromFront=" + article.url + "&imageFromFront=" + article.urlToImage +'&idFromFront='+user
+      body: "titleFromFront=" + encodeURIComponent(article.title) + "&descriptionFromFront=" + article.description + "&contentFromFront=" + article.content + "&urlFromFront=" + article.url + "&imageFromFront=" + article.urlToImage + '&idFromFront=' + user +'&langFromFront=' + props.lang
     });
     var response = await requete.json();
   }
-
 
   const handleOk = () => {
     setVisible(false);
@@ -131,7 +130,7 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStateToProps(state){
-  return { token: state.user.token, id: state.user._id }
+  return { token: state.user.token, id: state.user._id, lang: state.user.lang }
 }
 
 export default connect (
