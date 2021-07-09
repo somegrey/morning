@@ -33,7 +33,16 @@ function ScreenMyArticles(props) {
   };
   var ifEmpty= "";
 
- 
+  const deleteArticle = async (token,id) => {
+    var rawResponse =  await fetch(`/deletewishlist/`,{
+      method:'DELETE',
+      headers: {'Content-Type':'application/x-www-form-urlencoded'},
+      body: "token=" + token + "&id=" + id 
+    });
+  
+    var response  = await rawResponse.json();
+    setFrontDisplay(response.articles)
+  }
 
   useEffect(() =>{
     async function loadMyArticles(){
@@ -41,12 +50,13 @@ function ScreenMyArticles(props) {
       var response  = await rawResponse.json();
       console.log(response)
       setFrontDisplay(response.articles)
+      console.log(response.length)
+      console.log(response)
      }
      loadMyArticles()
     },[])
-    console.log(frontDisplay.length)
 
-var frontWishlist=[]
+  var frontWishlist=[]
   for (let i=0; i < frontDisplay.length; i++){
     frontWishlist.push(
       <Col span={6} style={{display:'flex',justifyContent:'center'}}>
@@ -55,7 +65,7 @@ var frontWishlist=[]
           cover={<img alt="example" src={frontDisplay[i].image}/>}
           actions={[
             <Icon onClick={() => showModal(frontDisplay[i].title, frontDisplay[i].content, frontDisplay[i].description, frontDisplay[i].url)} type="read" key="ellipsis2" />,
-            <Icon onClick={() => props.deleteArticle(props.i)} type="delete" key="ellipsis" />
+            <Icon onClick={() => deleteArticle(props.token, frontDisplay[i]._id)} type="delete" key="ellipsis" />
           ]}
           >  
           <Meta

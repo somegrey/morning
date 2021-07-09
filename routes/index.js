@@ -87,6 +87,28 @@ router.get('/getwishlist', async function(req, res, next) {
 
     res.json({articles: user.articleIds});
   });
+
+  /* DELETE dans la wishList */
+router.delete('/deletewishlist', async function(req, res, next) {
+
+  // var user = await UserModel.findOne({token: req.body.token })
+  // var wishlist = user.articleIds
+  // wishlist.deleteOne({id: req.body.id})
+  // console.log(id)
+
+  var user = await UserModel.findOne({token: req.body.token })
+  user.findOne({}, function(err, user){
+    user.articlesIds.req.body.id = undefined
+    user.save()
+  })
+  console.log(user)
+
+  res.json({deleted});
+});
+
+
+
+
 /* PUT choix de langue. */
 router.put('/chose-lang/:id', async function(req, res, next) {
   var user = await UserModel.findById(req.params.id);
@@ -97,5 +119,6 @@ router.put('/chose-lang/:id', async function(req, res, next) {
   console.log(user)
   res.json(user)
 });
+
 
 module.exports = router;
